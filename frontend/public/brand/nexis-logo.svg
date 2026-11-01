@@ -1,0 +1,20 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1254 1254">
+  <g fill="#000" stroke="#000" stroke-width="80"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M278 225 L620 620
+             M620 620 L970 1020
+             M278 625 L278 1020
+             M970 225 L970 625"
+          fill="none"/>
+    <g stroke="none">
+      <circle cx="278" cy="225" r="136"/>
+      <circle cx="278" cy="625" r="136"/>
+      <circle cx="278" cy="1020" r="136"/>
+      <circle cx="620" cy="620" r="140"/>
+      <circle cx="970" cy="225" r="137"/>
+      <circle cx="970" cy="625" r="137"/>
+      <circle cx="970" cy="1020" r="137"/>
+    </g>
+  </g>
+</svg>

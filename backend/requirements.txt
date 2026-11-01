@@ -1,0 +1,17 @@
+# Tested with Python 3.12.3
+fastapi==0.161.1
+uvicorn[standard]==0.54.0
+pydantic==2.14.1
+pydantic-settings==2.16.1
+SQLAlchemy==2.1.6
+alembic==1.20.1
+psycopg2-binary==2.9.13
+argon2-cffi==25.1.0
+PyJWT==2.15.1
+cryptography==50.0.2
+httpx==0.28.1
+email-validator==2.3.0
+langgraph==1.2.16
+langchain-core==1.7.0
+openai==3.37.0
+jsonschema==4.26.0

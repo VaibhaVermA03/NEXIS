@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================================
+   BRAND FONT — your custom font. Place the file at  frontend/public/fonts/GarneFont.otf
+   It is used ONLY for the NEXIS wordmark (class `font-brand`). If the file is missing the
+   browser silently falls back to the system font.
+   ============================================================================================ */
+@font-face {
+  font-family: 'Garne';
+  src: url('/fonts/GarneFont.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================================================
+   DESIGN TOKENS — single source of truth. Values are "R G B" triplets so Tailwind can add alpha.
+
+   LIGHT  #fcfdfd  #edeff3  #c6d1d7  #9fa0b5  #2f7eda  #555663
+   DARK   #e0e0e1  #a6a5a2  #d26e41  #655b55  #322628  #0a181e
+
+   Roles
+     bg         page background                 surface    cards / sidebar / header
+     surface-2  insets, hovers, code blocks     border     lines
+     text       main text                       muted      secondary text
+     accent     primary actions / links         accent-fg  text on accent
+   `muted` (light) and the status colours are the only values NOT taken from your palette:
+   #9fa0b5 on #fcfdfd is only ~2.6:1 contrast (too faint for readable text), so muted text uses a
+   slightly deeper tint of it (#6f7084, ~4.8:1) and #9fa0b5 is used for icons/placeholders.
+   ============================================================================================ */
+:root {
+  --bg: 237 239 243;          /* #edeff3 */
+  --surface: 252 253 253;     /* #fcfdfd */
+  --surface-2: 237 239 243;   /* #edeff3 */
+  --border: 198 209 215;      /* #c6d1d7 */
+  --text: 85 86 99;           /* #555663 */
+  --muted: 111 112 132;       /* #6f7084  (deeper tint of #9fa0b5 for readable secondary text) */
+  --faint: 159 160 181;       /* #9fa0b5 */
+  --accent: 47 126 218;       /* #2f7eda */
+  --accent-fg: 252 253 253;   /* #fcfdfd */
+  --danger: 205 62 62;
+  --success: 28 140 96;
+  --warning: 176 120 10;
+  --info: 47 126 218;
+  --radius: 10px;
+  --shadow-card: 0 1px 2px rgb(47 56 80 / 0.05), 0 6px 18px -8px rgb(47 56 80 / 0.12);
+  --shadow-pop: 0 18px 44px -12px rgb(47 56 80 / 0.28), 0 3px 10px rgb(47 56 80 / 0.08);
+  --logo-filter: none;
+}
+.dark {
+  --bg: 10 24 30;             /* #0a181e */
+  --surface: 50 38 40;        /* #322628 */
+  --surface-2: 10 24 30;      /* #0a181e */
+  --border: 101 91 85;        /* #655b55 */
+  --text: 224 224 225;        /* #e0e0e1 */
+  --muted: 166 165 162;       /* #a6a5a2 */
+  --faint: 134 126 120;
+  --accent: 210 110 65;       /* #d26e41 */
+  --accent-fg: 10 24 30;      /* #0a181e */
+  --danger: 240 108 104;
+  --success: 98 196 144;
+  --warning: 226 182 74;
+  --info: 210 110 65;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 22px -10px rgb(0 0 0 / 0.55);
+  --shadow-pop: 0 20px 48px -12px rgb(0 0 0 / 0.7), 0 3px 10px rgb(0 0 0 / 0.4);
+  /* Your logo is black: invert it to near-white (#e0e0e0 ≈ the dark theme's text colour). */
+  --logo-filter: invert(1) brightness(0.88);
+}
+
+html { color-scheme: light; -webkit-text-size-adjust: 100%; }
+html.dark { color-scheme: dark; }
+body {
+  @apply bg-bg text-text font-sans antialiased;
+  font-feature-settings: 'cv11', 'ss01';
+  letter-spacing: -0.006em;
+  overflow-x: hidden;
+}
+h1, h2, h3, h4 { letter-spacing: -0.02em; }
+:focus-visible { outline: 2px solid rgb(var(--accent)); outline-offset: 2px; border-radius: 6px; }
+::selection { background: rgb(var(--accent) / 0.25); }
+button, a, [role='tab'], [role='menuitem'] { -webkit-tap-highlight-color: transparent; }
+
+/* Cleaner, thinner line icons everywhere (lucide defaults to 2px) */
+.lucide { stroke-width: 1.6; }
+
+/* Logo: black artwork is inverted automatically in dark mode */
+.logo-img { filter: var(--logo-filter); }
+
+/* Slim scrollbars */
+* { scrollbar-width: thin; scrollbar-color: rgb(var(--border)) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: rgb(var(--border)); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@layer base {
+  /* Grid items default to min-width:auto, so a wide child (chart, long text) stretches the whole column past the screen. */
+  .grid > * { min-width: 0; }
+}
+
+@layer components {
+  .card { @apply rounded-xl border border-border bg-surface shadow-card; }
+  .link { @apply text-accent font-medium hover:underline underline-offset-2; }
+  .text-gradient {
+    background-image: linear-gradient(100deg, rgb(var(--accent)) 10%, rgb(var(--accent) / 0.55) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+}
+
+/* ---------- Responsive tables: rows become labelled cards on phones ---------- */
+@media (max-width: 767px) {
+  .table-stack thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .table-stack, .table-stack tbody { display: block; width: 100%; }
+  .table-stack tr { display: block; padding: 0.85rem 1rem; border-bottom: 1px solid rgb(var(--border)); }
+  .table-stack tr:last-child { border-bottom: 0; }
+  .table-stack td { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.35rem 0 !important; text-align: right; }
+  .table-stack td::before { content: attr(data-label); flex-shrink: 0; color: rgb(var(--muted)); font-size: 0.75rem; font-weight: 500; text-align: left; }
+  .table-stack td[data-label='']::before, .table-stack td:first-child::before { display: none; }
+  .table-stack td:first-child { display: block; text-align: left; padding-bottom: 0.5rem !important; }
+  .table-stack td:last-child[data-label=''] { justify-content: flex-end; }
+  /* long URLs / ids must wrap inside the card instead of pushing the row off-screen */
+  .table-stack td { min-width: 0; overflow-wrap: anywhere; white-space: normal !important; max-width: none !important; overflow: visible !important; text-overflow: clip !important; }
+  .table-stack td > * { min-width: 0; }
+  .table-stack td > .flex-wrap { justify-content: flex-end; }
+}
+
+/* ---------- Motion ---------- */
+@keyframes fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.96) translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes sheet-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes step-in { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes orb { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(24px, -18px) scale(1.08); } }
+
+.animate-fade-up { animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-pop { animation: pop-in 0.14s ease-out both; transform-origin: top right; }
+.animate-sheet { animation: sheet-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-fade-in { animation: fade-in 0.2s ease-out both; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.run-step { opacity: 0; animation: step-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: calc(var(--i) * 0.85s + 0.5s); }
+.caret { animation: blink 1s steps(2) infinite; }
+
+/* ---------- Login / signup hero ---------- */
+.auth-hero {
+  background:
+    radial-gradient(60% 50% at 15% 8%, rgb(var(--accent) / 0.22), transparent 70%),
+    radial-gradient(45% 40% at 95% 90%, rgb(var(--accent) / 0.14), transparent 70%),
+    rgb(var(--surface));
+  border-right: 1px solid rgb(var(--border));
+}
+.auth-grid {
+  background-image:
+    linear-gradient(rgb(var(--border) / 0.45) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--border) / 0.45) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 80% 70% at 30% 30%, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 30% 30%, #000 20%, transparent 75%);
+}
+.auth-orb { position: absolute; border-radius: 9999px; filter: blur(60px); background: rgb(var(--accent) / 0.28); animation: orb 14s ease-in-out infinite; }
+.auth-mobile-glow { background: radial-gradient(70% 40% at 50% 0%, rgb(var(--accent) / 0.16), transparent 70%); }
+@media (min-width: 1024px) { .auth-mobile-glow { background: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .run-step { opacity: 1; animation: none; }
+}

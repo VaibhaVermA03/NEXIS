@@ -1,0 +1,23 @@
+# Testing
+
+## Quality gates (commands)
+| Gate | Command |
+|---|---|
+| Backend tests (SQLite) | `cd backend && pytest -q` |
+| Backend tests (PostgreSQL) | `cd backend && TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/nexis_test pytest -q` (database must exist; tables are dropped/recreated per test) |
+| Backend lint | `cd backend && ruff check .` |
+| Migrations apply & match models | `cd backend && alembic upgrade head && alembic check` |
+| Frontend tests | `cd frontend && npm test` |
+| Frontend lint | `cd frontend && npm run lint` |
+| Frontend production build | `cd frontend && npm run build` |
+| Dependency audit | `cd backend && pip-audit -r requirements.txt` · `cd frontend && npm audit --omit=dev` |
+| Live smoke test (real HTTP) | start backend, then `python scripts/smoke_test.py http://localhost:8000` |
+| Browser e2e (Playwright) | `cd e2e && npm i && npm run install-browsers && npm test` — **not executed by the author** |
+
+## What the suites cover
+**Backend (165):** health/ready; security headers; signup validation, normalisation, duplicates; login success/generic failure; access-token expiry; CSRF; refresh rotation, reuse detection, logout revocation; rate limiting; password reset (single use, sessions revoked, no link in production); change-password; Google (unconfigured, PKCE/state/nonce redirect, success, state mismatch/missing, cancelled, bad token, no silent linking, unverified email, ID-token signature/aud/iss/exp/nonce with a generated RSA key); production-config validation; blank `.env` safety; agent/tool/API-key/workflow CRUD and validation; **cross-user isolation** across every resource; secret masking/encryption/rotation; API-key hashing, scopes, revocation; **SSRF** (≈30 hostile URL forms, DNS-to-private, rebinding via multiple answers, allow-list, redirects, size/content-type/malformed JSON/timeouts, header injection); **engine runs with a scripted model and real tools** (multi-step runs with real computation, step budget, wall-clock timeout, provider failure, sanitized crashes, unpermitted tools and bad arguments, prompt-injection framing); **approvals on real write tools** (approve → the HTTP call is made; deny/timeout/cancel → it is never made); custom-tool failures and SSRF refusal inside a run; workflows; SSE serialisation, replay, `Last-Event-ID` resume, live follow, auth/ownership; API-key execution; restart recovery; pagination; dashboard numbers; log/payload redaction; **migration 0002 on realistic data (demo data removed, real data kept; SQLite and PostgreSQL)**; **web search via Tavily** (exact request format and Bearer header, result mapping/clamping, every error code incl. 432/433 credit limit, timeouts, malformed responses, key never leaked, a full run with untrusted results, tool hidden without a key); **guards that fail if any demo/mock/sample-order or Brave code returns**.
+**Frontend (90):** login/signup/reset validation and server-error mapping; Google button and error mapping; protected routing and refresh recovery; API client (401→refresh→retry, CSRF header, 403/404/409/422/429/5xx/network); error states with retry; agent create/edit/delete as a popup + unsaved-changes guard; tool registry forms, write-only secrets, SSRF rejection display, test runner; API key show-once/rotate/revoke; SSE parsing and event reduction; execution timeline/tool cards/final output; failure, cancelled, approval and reconnect-without-duplicates states; run form (blocked with a clear message when the server has no OpenAI key; sends no "mode"); empty and populated dashboard; custom dropdowns (joined container, trigger-width list, keyboard, flip-up); one-create-button rules; responsive navigation, sidebar, theme persistence; palette/brand-font tokens; **a guard that fails if demo/mock content returns**.
+**Live smoke script:** 22 checks without AI (incl. "refuses clearly when `OPENAI_API_KEY` is missing"), 27 with `--with-ai` (real run, persisted events, SSE replay/resume, dashboard).
+
+## Honest gaps
+Not covered by automated tests here: calls to the real OpenAI service (the official SDK *was* exercised end-to-end against a local OpenAI-protocol server) and real Google calls; Docker/Compose; Render/Vercel; Playwright e2e; Safari/mobile browsers; accessibility audit with assistive tech; performance/load; visual regression. The Vitest tests run in jsdom, which does not render charts (Recharts needs real layout) or CSS.

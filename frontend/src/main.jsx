@@ -1,0 +1,9 @@
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+// Self-hosted fonts (bundled by Vite; no external requests): UI text + code
+import '@fontsource-variable/inter/wght.css'
+import '@fontsource-variable/jetbrains-mono/wght.css'
+import './styles/index.css'
+import App from './App'
+
+createRoot(document.getElementById('root')).render(<StrictMode><App /></StrictMode>)
