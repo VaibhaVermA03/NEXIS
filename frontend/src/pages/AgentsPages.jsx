@@ -75,8 +75,19 @@ export function AgentsPage() {
               <Pagination page={page} pageSize={10} total={list.data.total} onPage={setPage} />
             </>)}
       </div>
-      <Dialog open={creating} onClose={closeCreate} dismissible={false} size="lg" title="New agent" description="Define behavior, model settings and permitted tools.">
-        <AgentForm embedded onSubmit={create} onCancel={closeCreate} submitLabel="Create agent" />
+      <Dialog open={creating} onClose={closeCreate} dismissible={false} size="lg" title="New agent" description="Define behavior, model settings and permitted tools."
+        footer={
+          <>
+          <Button variant="secondary" onClick={closeCreate}>
+            Cancel
+          </Button>
+          <Button type="submit" form="create-agent-form">
+            Create agent
+          </Button>
+          </>
+        }
+      >
+        <AgentForm embedded formId="create-agent-form" onSubmit={create} onCancel={closeCreate} submitLabel="Create agent" />
       </Dialog>
       <ConfirmDialog open={!!del} onClose={() => setDel(null)} onConfirm={() => remove.mutate(del.id)} loading={remove.isPending} danger confirmLabel="Delete agent"
         title={`Delete “${del?.name}”?`} message="This permanently removes the agent and its tool permissions. Past executions are kept but will no longer be linked to an agent. Workflows using it will lose those steps." />

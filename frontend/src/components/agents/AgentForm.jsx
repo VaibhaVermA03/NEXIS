@@ -15,7 +15,7 @@ import { useState } from 'react'
 
 const DEFAULTS = { name: '', description: '', system_instructions: '', model: 'gpt-4o-mini', temperature: 0.2, max_steps: 6, enabled: true, tool_keys: [] }
 
-export function AgentForm({ agent, onSubmit, submitLabel = 'Save agent', embedded = false, onCancel }) {
+export function AgentForm({ agent, onSubmit, submitLabel = 'Save agent', embedded = false, onCancel, formId }) {
   const [serverError, setServerError] = useState('')
   const tools = useQuery({ queryKey: ['tools'], queryFn: toolsApi.list })
   const { register, handleSubmit, control, reset, setError, formState: { errors, isSubmitting, isDirty, isSubmitSuccessful } } = useForm({
@@ -44,7 +44,9 @@ export function AgentForm({ agent, onSubmit, submitLabel = 'Save agent', embedde
   const custom = (tools.data || []).filter((t) => t.kind === 'custom')
 
   return (
-    <form onSubmit={handleSubmit(submit)} noValidate className={embedded ? 'space-y-5' : 'space-y-6'} aria-label="Agent configuration">
+    <form id={formId} onSubmit={handleSubmit(submit)} noValidate className={embedded ? 'space-y-5' : 'space-y-6'} aria-label="Agent configuration">
+      <div className={embedded ? 'min-h-0 flex-1 space-y-5 overflow-y-auto px-1 pb-5' : 'space-y-6'}>
+
       {serverError && <Alert tone="danger">{serverError}</Alert>}
       <section className={embedded ? 'space-y-4' : 'card space-y-4 p-5'}>
         <h3 className="font-semibold">General</h3>
@@ -81,13 +83,14 @@ export function AgentForm({ agent, onSubmit, submitLabel = 'Save agent', embedde
             return <div className="space-y-2">{builtin.map(row)}{custom.length > 0 && <p className="pt-2 text-xs font-medium text-muted">Custom tools</p>}{custom.map(row)}</div>
           }} />)}
       </section>
-      <div className={cn(embedded
-        ? 'sticky bottom-0 z-10 -mx-5 -mb-4 flex flex-col-reverse gap-2 border-t border-border bg-surface px-5 py-3 sm:flex-row sm:items-center sm:justify-end [&>button]:w-full sm:[&>button]:w-auto'
-        : 'flex items-center justify-end gap-3')}>
+      </div>
+      {!embedded && (
+      <div className="flex items-center justify-end gap-3">
         {isDirty && <span className={cn('text-xs text-muted', embedded && 'sm:mr-auto')}>Unsaved changes</span>}
         {embedded && <Button variant="secondary" onClick={onCancel}>Cancel</Button>}
         <Button type="submit" loading={isSubmitting}>{submitLabel}</Button>
       </div>
+    )}
       <ConfirmDialog open={blocker.state === 'blocked'} onClose={() => blocker.reset?.()} onConfirm={() => blocker.proceed?.()}
         title="Discard unsaved changes?" message="You have unsaved changes to this agent. If you leave now they will be lost." confirmLabel="Discard changes" danger />
     </form>
