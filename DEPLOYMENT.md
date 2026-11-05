@@ -51,5 +51,6 @@ python scripts/smoke_test.py https://api.example.com   # creates throwaway users
 
 ## 7. Platform limitations to know
 * Free/spin-down instances drop in-flight runs; they are marked *failed (interrupted)* on restart.
+* **Cold starts (Render free plan):** an idle backend sleeps and the first request can take up to a minute. The app handles this: it shows a "Waking up the server…" screen (after ~2.5 s), keeps retrying network errors and 5xx for about 90 s instead of showing the login page, and then offers a "Try again" button. Upgrading the Render instance type removes the cold start.
 * Multi-instance: in-memory rate limits and in-process execution are per instance. A run is executed by the instance that accepted it, and any instance can *stream* it (events are in the DB), but only one instance should be scaled up until a queue/worker is added.
 * Long SSE connections: some proxies cap idle/total time. The server heartbeats every 15 s, ends a connection after 10 min (client reconnects with `Last-Event-ID`), and the UI falls back to polling.

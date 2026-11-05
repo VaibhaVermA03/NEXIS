@@ -43,6 +43,8 @@ export async function refreshSession() {
   if (!refreshing) {
     refreshing = fetch(apiUrl('/auth/refresh'), {
       method: 'POST', credentials: 'include', headers: { 'X-Requested-With': 'nexis' },
+    }).catch(() => {
+      throw new ApiError(0, 'network_error', 'Cannot reach the server. Check your connection and that the backend is running.')
     }).then(async (res) => {
       const data = await parse(res)
       if (!res.ok) throw toError(res, data)

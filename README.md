@@ -3,7 +3,7 @@
 Autonomous AI agent & workflow automation SaaS. Create agents, authorize the tools they may use, run multi-step tasks,
 watch every step stream live, chain agents into workflows, and call it all from your own systems with API keys.
 
-> **Status:** a complete, locally runnable application with 165 backend tests, 90 frontend tests and a 27-check live
+> **Status:** a complete, locally runnable application with 165 backend tests, 103 frontend tests and a 27-check live
 > smoke test passing (see `TEST_REPORT.md` for exactly what was and was **not** verified). It is **not certified
 > production-ready** — read *Known limitations* and `SECURITY.md` before exposing it to the internet.
 

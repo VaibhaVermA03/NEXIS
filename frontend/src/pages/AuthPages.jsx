@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
-import { CheckCircle2, ShieldCheck, ShieldQuestion, Workflow, Zap } from 'lucide-react'
+import { CheckCircle2, ShieldQuestion } from 'lucide-react'
 import { useAuth } from '../app/AuthContext'
 import { apiUrl, fieldErrors } from '../lib/api'
 import { forgotSchema, loginSchema, resetSchema, signupSchema } from '../lib/schemas'
 import { authApi } from '../services/endpoints'
 import { Logo } from '../components/ui/Logo'
+import { cn } from '../lib/utils'
 import { Button, ButtonLink } from '../components/ui/Button'
 import { Input, PasswordInput } from '../components/ui/Form'
 import { Alert } from '../components/ui/Feedback'
@@ -29,12 +30,6 @@ export const OAUTH_ERRORS = {
 }
 
 const safeNext = (n) => (n && n.startsWith('/app') ? n : '/app/dashboard')
-
-const FEATURES = [
-  [Zap, 'Bounded, observable runs', 'Every step is streamed and recorded'],
-  [ShieldCheck, 'Permissions & approvals', 'Agents only use tools you authorize'],
-  [Workflow, 'Chain agents into workflows', 'Repeatable multi-step automation'],
-]
 
 /** Purely decorative illustration (not real data): an animated example of what a run looks like. */
 function ExampleRun() {
@@ -64,42 +59,63 @@ function ExampleRun() {
   )
 }
 
+/**
+ * Desktop must never scroll: if the content is taller than the window it is scaled down (never below 62%) so everything
+ * stays on one screen, vertically centred. On phones/tablets it is left alone and the page simply scrolls if needed.
+ */
+function FitToViewport({ children, className }) {
+  const ref = useRef(null)
+  const [scale, setScale] = useState(1)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return undefined
+    const fit = () => {
+      const desktop = window.matchMedia ? window.matchMedia('(min-width: 1024px)').matches : false
+      if (!desktop) { setScale(1); return }
+      const room = window.innerHeight - 24
+      const natural = el.offsetHeight                 // layout height is not affected by the transform
+      setScale(natural > room ? Math.max(0.62, room / natural) : 1)
+    }
+    fit()
+    const ro = new ResizeObserver(fit)                // content grows when validation errors appear
+    ro.observe(el)
+    window.addEventListener('resize', fit)
+    return () => { ro.disconnect(); window.removeEventListener('resize', fit) }
+  }, [])
+  return (
+    <div ref={ref} data-testid="auth-fit" style={scale < 1 ? { transform: `scale(${scale})`, transformOrigin: 'center' } : undefined}
+      className={cn('transition-transform duration-200', className)}>{children}</div>
+  )
+}
+
 function AuthLayout({ title, subtitle, children, footer }) {
   return (
-    <div className="grid min-h-[100dvh] lg:grid-cols-[1.08fr_1fr]">
-      <aside className="auth-hero relative hidden flex-col justify-between overflow-hidden p-12 lg:flex xl:p-16">
+    <div data-testid="auth-root" className="min-h-[100dvh] lg:grid lg:h-[100dvh] lg:grid-cols-[1.08fr_1fr] lg:overflow-hidden">
+      <aside className="auth-hero relative hidden flex-col justify-center overflow-hidden px-12 lg:flex xl:px-16">
         <div className="auth-grid absolute inset-0" aria-hidden="true" />
         <div className="auth-orb -left-10 top-1/3 h-72 w-72" aria-hidden="true" />
         <div className="auth-orb -bottom-16 right-0 h-64 w-64" style={{ animationDelay: '-7s' }} aria-hidden="true" />
-        <Logo size="lg" className="relative" />
-        <div className="relative space-y-8">
-          <div className="space-y-5">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1 text-xs font-medium text-muted backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />Autonomous AI agents
-            </span>
-            <h2 className="max-w-lg text-5xl font-semibold leading-[1.05] tracking-tight xl:text-6xl">From Intent to <span className="text-gradient">Execution.</span></h2>
-            <p className="max-w-md text-base leading-relaxed text-muted">Create agents, authorize their tools, run multi-step tasks and watch every step as it happens.</p>
+        <div className="relative space-y-7">
+          <Logo size="lg" />
+          <div className="space-y-4">
+            <h2 className="max-w-lg text-4xl font-semibold leading-[1.08] tracking-tight xl:text-5xl">From Intent to <span className="text-gradient">Execution.</span></h2>
+            <p className="max-w-md text-sm leading-relaxed text-muted xl:text-base">Create agents, authorize their tools, run multi-step tasks and watch every step as it happens.</p>
           </div>
-          <ExampleRun />
-          <ul className="grid max-w-lg gap-3 text-sm">
-            {FEATURES.map(([I, t, d]) => (
-              <li key={t} className="flex items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent"><I className="h-[18px] w-[18px]" /></span>
-                <span><span className="font-medium text-text">{t}</span><span className="block text-xs text-muted">{d}</span></span>
-              </li>))}
-          </ul>
+          <div className="auth-hide-short"><ExampleRun /></div>
         </div>
-        <p className="relative text-xs text-muted">© {new Date().getFullYear()} NEXIS</p>
+        <p className="absolute bottom-6 left-12 text-xs text-muted xl:left-16">© {new Date().getFullYear()} NEXIS</p>
       </aside>
 
-      <main className="auth-mobile-glow relative flex items-center justify-center px-4 py-10 sm:px-8">
-        <div className="relative w-full max-w-md animate-fade-up">
-          <Logo className="mb-8 lg:hidden" />
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-[2rem]">{title}</h1>
-          {subtitle && <p className="mt-2 text-sm text-muted sm:text-base">{subtitle}</p>}
-          <div className="mt-7 rounded-2xl border border-border bg-surface p-5 shadow-card sm:p-7">{children}</div>
-          <div className="mt-6 text-center text-sm text-muted">{footer}</div>
-        </div>
+      <main className="auth-mobile-glow relative flex min-h-[100dvh] items-center justify-center px-4 py-6 sm:px-8 lg:min-h-0 lg:overflow-hidden lg:py-3">
+        <FitToViewport className="w-full max-w-md">
+          <div className="animate-fade-up">
+            <Logo className="mb-5 lg:hidden" />
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-[1.75rem]">{title}</h1>
+            {subtitle && <p className="mt-1.5 text-sm text-muted">{subtitle}</p>}
+            <div className="mt-5 rounded-2xl border border-border bg-surface p-4 shadow-card sm:p-5">{children}</div>
+            <div className="mt-4 text-center text-sm text-muted">{footer}</div>
+          </div>
+        </FitToViewport>
       </main>
     </div>
   )
@@ -123,7 +139,7 @@ export function GoogleButton({ label = 'Continue with Google' }) {
 }
 
 const Divider = () => (
-  <div className="my-5 flex items-center gap-3 text-xs font-medium tracking-wider text-faint" role="separator" aria-label="or"><span className="h-px flex-1 bg-border" />OR<span className="h-px flex-1 bg-border" /></div>
+  <div className="my-3 flex items-center gap-3 text-xs font-medium tracking-wider text-faint sm:my-4" role="separator" aria-label="or"><span className="h-px flex-1 bg-border" />OR<span className="h-px flex-1 bg-border" /></div>
 )
 
 function useServerErrors(setError) {
@@ -148,7 +164,7 @@ export function LoginPage() {
       {oauthErr && <Alert tone="danger" className="mb-4">{OAUTH_ERRORS[oauthErr] || OAUTH_ERRORS.oauth_error}</Alert>}
       <GoogleButton />
       <Divider />
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4" aria-label="Sign in">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-3" aria-label="Sign in">
         {formError && <Alert tone="danger">{formError}</Alert>}
         <Input label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
         <PasswordInput label="Password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
@@ -169,7 +185,7 @@ export function SignupPage() {
       footer={<>Already have an account? <Link to="/login" className="link">Sign in</Link></>}>
       <GoogleButton label="Sign up with Google" />
       <Divider />
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4" aria-label="Create account">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-3" aria-label="Create account">
         {formError && <Alert tone="danger">{formError}</Alert>}
         <Input label="Full name" autoComplete="name" error={errors.full_name?.message} {...register('full_name')} />
         <Input label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
@@ -190,7 +206,7 @@ export function ForgotPasswordPage() {
     <AuthLayout title="Reset your password" subtitle="Enter your email and we'll issue a reset link."
       footer={<Link to="/login" className="link">Back to sign in</Link>}>
       {result ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <Alert tone="success" title="Request received">{result.message}</Alert>
           {result.dev_reset_link ? (
             <Alert tone="warning" title="Development mode">No email provider is configured, so no email was sent. Use this one-time link: <a className="link break-all" href={result.dev_reset_link}>Reset password</a></Alert>
@@ -199,7 +215,7 @@ export function ForgotPasswordPage() {
           )}
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4" aria-label="Request password reset">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-3" aria-label="Request password reset">
           {formError && <Alert tone="danger">{formError}</Alert>}
           <Input label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
           <Button type="submit" className="w-full" loading={isSubmitting}>Send reset link</Button>
@@ -218,9 +234,9 @@ export function ResetPasswordPage() {
   return (
     <AuthLayout title="Choose a new password" footer={<Link to="/login" className="link">Back to sign in</Link>}>
       {done ? (
-        <div className="space-y-4"><Alert tone="success" title="Password updated"><CheckCircle2 className="mr-1 inline h-4 w-4" />All other sessions were signed out.</Alert><ButtonLink to="/login" className="w-full">Sign in</ButtonLink></div>
+        <div className="space-y-3"><Alert tone="success" title="Password updated"><CheckCircle2 className="mr-1 inline h-4 w-4" />All other sessions were signed out.</Alert><ButtonLink to="/login" className="w-full">Sign in</ButtonLink></div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4" aria-label="Reset password">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-3" aria-label="Reset password">
           {formError && <Alert tone="danger">{formError}</Alert>}
           <PasswordInput label="New password" autoComplete="new-password" error={errors.password?.message} {...register('password')} />
           <PasswordInput label="Confirm new password" autoComplete="new-password" error={errors.password_confirm?.message} {...register('password_confirm')} />

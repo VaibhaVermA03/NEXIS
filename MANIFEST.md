@@ -1,18 +1,18 @@
 # File manifest
 
-150 files. SHA-256 truncated to 16 hex chars. (This manifest is not listed in itself.)
+152 files. SHA-256 truncated to 16 hex chars. (This manifest is not listed in itself.)
 
 | Path | Bytes | Lines | SHA-256 (16) |
 |---|---:|---:|---|
 | `.env.example` | 1721 | 32 | `02257c7ec3174447` |
 | `.github/workflows/ci.yml` | 1456 | 39 | `9e51c57ad07a2273` |
 | `.gitignore` | 143 | 15 | `c7212b27268750c7` |
-| `DEPLOYMENT.md` | 5891 | 55 | `c5e077f08071eaf7` |
+| `DEPLOYMENT.md` | 6266 | 56 | `69a880399584c047` |
 | `Makefile` | 1031 | 27 | `c9d65f2e26b7e37b` |
-| `README.md` | 15184 | 199 | `2595230570342edc` |
+| `README.md` | 15185 | 199 | `f274ed0f09e78848` |
 | `SECURITY.md` | 5133 | 38 | `9c78ec06469adab6` |
-| `TESTING.md` | 4429 | 23 | `0fb07eddde419bd1` |
-| `TEST_REPORT.md` | 3530 | 35 | `69986790a6461f61` |
+| `TESTING.md` | 4772 | 23 | `e557c78abace1d8f` |
+| `TEST_REPORT.md` | 3531 | 35 | `fbd81ca681681e52` |
 | `backend/.dockerignore` | 93 | 10 | `e60ef1ba35c1325a` |
 | `backend/.env.example` | 1721 | 32 | `02257c7ec3174447` |
 | `backend/Dockerfile` | 642 | 13 | `ff4148bfc61ea9da` |
@@ -103,7 +103,7 @@
 | `frontend/public/brand/.gitkeep` | 0 | 0 | `e3b0c44298fc1c14` |
 | `frontend/public/brand/README.md` | 251 | 5 | `3f677c3ec30b80aa` |
 | `frontend/src/App.jsx` | 904 | 22 | `18ddd66a5a322317` |
-| `frontend/src/app/AuthContext.jsx` | 1968 | 45 | `ba24f1399432d5e7` |
+| `frontend/src/app/AuthContext.jsx` | 3181 | 67 | `abbc39e09debb54b` |
 | `frontend/src/app/ThemeContext.jsx` | 1288 | 28 | `4c63fd5cf825c55f` |
 | `frontend/src/components/agents/AgentForm.jsx` | 6708 | 95 | `ca737711e7744fb4` |
 | `frontend/src/components/charts.jsx` | 3318 | 56 | `48963228842dc018` |
@@ -121,7 +121,7 @@
 | `frontend/src/components/ui/Overlay.jsx` | 8379 | 165 | `341728b0f1f86254` |
 | `frontend/src/components/ui/Toast.jsx` | 2202 | 45 | `bb22ab6aa6e379ca` |
 | `frontend/src/hooks/useExecutionStream.js` | 2869 | 71 | `4c8b11e0e934863d` |
-| `frontend/src/lib/api.js` | 3790 | 99 | `29dc5f5bd76ae37e` |
+| `frontend/src/lib/api.js` | 3939 | 101 | `3f0c377394410ed5` |
 | `frontend/src/lib/executionModel.js` | 4096 | 76 | `5bc43890bd196329` |
 | `frontend/src/lib/schemas.js` | 3453 | 58 | `46526587d6ed5789` |
 | `frontend/src/lib/sse.js` | 1762 | 45 | `04aaa3bd6bec04d5` |
@@ -130,19 +130,21 @@
 | `frontend/src/pages/AgentsPages.jsx` | 10271 | 122 | `581b403d20b83665` |
 | `frontend/src/pages/AnalyticsPage.jsx` | 3375 | 41 | `5e563e58f1c84b6f` |
 | `frontend/src/pages/ApiKeysPage.jsx` | 8029 | 88 | `31434fbec25e3c56` |
-| `frontend/src/pages/AuthPages.jsx` | 16074 | 248 | `e5e231d59665cca8` |
+| `frontend/src/pages/AuthPages.jsx` | 16645 | 264 | `b93046735e98ba54` |
 | `frontend/src/pages/DashboardPage.jsx` | 6106 | 70 | `4530be60d228e05c` |
 | `frontend/src/pages/ExecutionsPages.jsx` | 4210 | 62 | `6b013cb9afc7a4ff` |
 | `frontend/src/pages/SettingsPage.jsx` | 6504 | 77 | `80d9cf3ddfe8f500` |
 | `frontend/src/pages/ToolsPage.jsx` | 7778 | 83 | `d171662411306abd` |
 | `frontend/src/pages/WorkflowsPages.jsx` | 10698 | 97 | `e73b2a95dee2b39a` |
-| `frontend/src/routes/ProtectedRoute.jsx` | 961 | 25 | `57a9a9954a951df4` |
+| `frontend/src/routes/ProtectedRoute.jsx` | 4328 | 79 | `9dc7c76b6ba73060` |
 | `frontend/src/routes/index.jsx` | 2924 | 45 | `51bf01505c9016da` |
 | `frontend/src/services/endpoints.js` | 2618 | 58 | `6f7531ac2c09bb54` |
-| `frontend/src/styles/index.css` | 8965 | 170 | `180511d85a795e33` |
+| `frontend/src/styles/index.css` | 9589 | 176 | `9a94638c41929953` |
 | `frontend/src/test/auth.test.jsx` | 11844 | 196 | `2615b195ec34c66b` |
 | `frontend/src/test/changes.test.jsx` | 21997 | 295 | `053debb859eb9bcb` |
 | `frontend/src/test/execution.test.jsx` | 12435 | 150 | `4aeafcdfe2d3af07` |
+| `frontend/src/test/loader.test.jsx` | 5552 | 86 | `29f7217d1ada1a0f` |
+| `frontend/src/test/login-layout.test.jsx` | 4684 | 77 | `bd8565a7d3938ddf` |
 | `frontend/src/test/no-demo.test.jsx` | 1246 | 26 | `ce738dcfc9e68e87` |
 | `frontend/src/test/resources.test.jsx` | 14421 | 183 | `153003c70da938b4` |
 | `frontend/src/test/setup.js` | 508 | 10 | `42ad7a35288b5e23` |

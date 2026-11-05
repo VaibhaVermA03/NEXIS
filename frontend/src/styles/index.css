@@ -143,6 +143,11 @@ button, a, [role='tab'], [role='menuitem'] { -webkit-tap-highlight-color: transp
 .animate-float { animation: float 6s ease-in-out infinite; }
 .run-step { opacity: 0; animation: step-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: calc(var(--i) * 0.85s + 0.5s); }
 .caret { animation: blink 1s steps(2) infinite; }
+@keyframes wake { 0% { transform: translateX(-110%); } 100% { transform: translateX(260%); } }
+.wake-bar { height: 4px; overflow: hidden; border-radius: 9999px; background: rgb(var(--surface-2)); }
+.wake-bar > span { display: block; width: 40%; height: 100%; border-radius: inherit; background: rgb(var(--accent)); animation: wake 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+/* Login showcase: on short desktop windows drop the illustration so everything still fits without scrolling */
+@media (max-height: 700px) { .auth-hide-short { display: none; } }
 
 /* ---------- Login / signup hero ---------- */
 .auth-hero {
@@ -167,4 +172,5 @@ button, a, [role='tab'], [role='menuitem'] { -webkit-tap-highlight-color: transp
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .run-step { opacity: 1; animation: none; }
+  .wake-bar > span { animation: none; width: 100%; opacity: 0.45; }
 }

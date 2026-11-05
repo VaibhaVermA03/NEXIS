@@ -13,7 +13,7 @@ delivery, this round was **not** re-verified by extracting a fresh ZIP; it was r
 | Upgrade of a *legacy* PostgreSQL DB (old schema + demo data) with `python -m app.db.init_db` | demo data gone, real data kept, `alembic check` reports no drift |
 | `alembic check` at head (SQLite and PostgreSQL) | No new upgrade operations detected |
 | Frontend lint | clean |
-| Frontend tests | **90 passed** (7 files) |
+| Frontend tests | **103 passed** (9 files) |
 | Frontend production build | built |
 | Live smoke test, real server + PostgreSQL + **official OpenAI SDK against a local OpenAI-protocol server**, `--with-ai` | **27/27 checks**, 0 server errors |
 | Live smoke test, server with **no** OpenAI key | 22/22 checks (refuses clearly, creates no run) |
